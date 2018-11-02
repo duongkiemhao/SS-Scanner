@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+        <RelativeLayout
+        android:id="@+id/frame_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#533889"
+        android:fitsSystemWindows="true"
+        android:orientation="vertical">
+            <LinearLayout android:orientation="horizontal" android:layout_marginTop="50dp"
+                android:layout_width="wrap_content" android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content" android:id="@+id/layout_spinner">
+                <TextView android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content" android:textColor="@color/white" android:text="Please choose"
+                    android:layout_height="wrap_content" />
+                <com.jaredrummler.materialspinner.MaterialSpinner android:layout_marginLeft="10dp"
+                    android:id="@+id/spinner" android:layout_gravity="center_vertical"
+                    android:layout_width="150dp" app:ms_background_color="@color/white"
+                    app:ms_text_color="@color/color_1"
+                    android:layout_height="40dp"/>
+            </LinearLayout>
+            <android.support.v7.widget.RecyclerView android:layout_below="@+id/layout_spinner" android:layout_marginTop="20dp"
+                android:layout_width="match_parent" android:layout_marginStart="20dp" android:layout_marginEnd="20dp"
+                android:id="@+id/recycler_view"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:layout_width="50dp" android:layout_alignParentRight="true" android:id="@+id/btn_add"
+                android:layout_alignParentBottom="true" android:layout_marginBottom="20dp" android:layout_marginEnd="20dp"
+                android:src="@drawable/ic_add"
+                android:layout_height="50dp" />
+        </RelativeLayout>
+
+</layout>

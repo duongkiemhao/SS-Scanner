@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent" android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+        android:id="@+id/frame_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@mipmap/splash"
+        android:fitsSystemWindows="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Please choose scan type"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <com.balysv.materialripple.MaterialRippleLayout
+                app:mrl_rippleOverlay="true"
+                android:layout_width="100dp"
+                android:background="@drawable/button_stroke_blue"
+                android:layout_height="100dp" app:mrl_rippleDuration="@integer/ripple_duration">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/btn_scan_vin"
+                android:gravity="center"
+                android:text="VIN"
+                android:textColor="@color/button_blue"
+                android:textSize="22sp" />
+            </com.balysv.materialripple.MaterialRippleLayout>
+
+            <com.balysv.materialripple.MaterialRippleLayout
+                android:layout_marginLeft="50dp" app:mrl_rippleOverlay="true"
+                android:layout_width="100dp"
+                android:background="@drawable/button_stroke_blue"
+                android:layout_height="100dp" app:mrl_rippleDuration="@integer/ripple_duration">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="REGO"  android:id="@+id/btn_scan_rego"
+                android:textColor="@color/button_blue"
+                android:textSize="22sp" />
+            </com.balysv.materialripple.MaterialRippleLayout>
+
+        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:orientation="horizontal">
+
+                <com.balysv.materialripple.MaterialRippleLayout
+                    app:mrl_rippleOverlay="true"
+                    android:layout_width="100dp"
+                    android:background="@drawable/button_stroke_blue"
+                    android:layout_height="100dp" app:mrl_rippleDuration="@integer/ripple_duration">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:id="@+id/btn_scan_barcode"
+                        android:gravity="center"
+                        android:text="BAR CODE"
+                        android:textColor="@color/button_blue"
+                        android:textSize="22sp" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+
+                <com.balysv.materialripple.MaterialRippleLayout
+                    android:layout_marginLeft="50dp" app:mrl_rippleOverlay="true"
+                    android:layout_width="100dp"
+                    android:background="@drawable/button_stroke_blue"
+                    android:layout_height="100dp" app:mrl_rippleDuration="@integer/ripple_duration">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="QR\nCODE"  android:id="@+id/btn_scan_qrcode"
+                        android:textColor="@color/button_blue"
+                        android:textSize="22sp"
+                        tools:ignore="HardcodedText" />
+                </com.balysv.materialripple.MaterialRippleLayout>
+
+            </LinearLayout>
+        <ImageView
+            android:layout_width="wrap_content" android:id="@+id/imageView"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:background="@color/transparent"
+            android:paddingTop="20dp"
+            android:layout_margin="0dp"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            android:contentInsetRight="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp">
+
+        </android.support.v7.widget.Toolbar>
+        <TextView android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" android:paddingBottom="20dp"
+            android:layout_width="wrap_content"  android:textColor="@color/white" android:text="App Version v1.0.0"
+            android:layout_height="wrap_content" android:id="@+id/txt_app_version" />
+    </RelativeLayout>
+</layout>
