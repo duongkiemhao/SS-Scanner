@@ -171,7 +171,7 @@ class ScanResultActivity : BaseActivity(){
         mainModel.dateString = DateUtility.parseDateToDateTimeStr(Config.DATE_TIME_PATTERN, date)
         mainViewModel.addMainModel(mainModel)
         Toasty.success(this, "Added").show()
-        //finish()
+        finish()
     }
 
     fun getType():Int{

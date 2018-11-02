@@ -16,7 +16,7 @@ class Config{
             var BASE_URL="http://anystring.com"
 
             var DATE_TIME_PATTERN="dd/MM/yyyy HH:mm"
-            var LIMIT=500
+            var LIMIT=5000
 
 
 
