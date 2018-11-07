@@ -22,7 +22,7 @@
 
     <application
         android:allowBackup="true" android:name="com.siliconstack.carscanner.AppApplication"
-        android:icon="@mipmap/app_icon"
+        android:icon="@mipmap/ic_logo_ss"
         android:label="@string/app_name"
          android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">

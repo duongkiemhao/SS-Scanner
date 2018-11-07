@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
         multiDexEnabled true
         manifestPlaceholders = [HOCKEYAPP_APP_ID: "48d36a0a45fc4393bf1b3ba6d91a609e",applicationIdWithSuffix: "${applicationId}" ]
 
@@ -198,6 +198,9 @@ dependencies {
 //    compile 'com.brandongogetap:stickyheaders:0.5.1'
     compile 'com.thoughtbot:expandablerecyclerview:1.3'
 
+    compile ('com.github.ganfra:material-spinner:2.0.0'){
+        exclude group: 'com.android.support', module: 'appcompat-v7'
+    }
 
 }
 //apply plugin: 'com.google.gms.google-services'
