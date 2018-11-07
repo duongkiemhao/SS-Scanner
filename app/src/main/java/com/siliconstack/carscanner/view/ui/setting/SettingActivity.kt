@@ -3,6 +3,7 @@ package com.siliconstack.carscanner.view.ui.setting
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.databinding.adapters.ViewGroupBindingAdapter.setListener
+import android.graphics.Color
 import android.os.Bundle
 import com.siliconstack.carscanner.AppApplication
 import com.siliconstack.carscanner.R
@@ -14,6 +15,8 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputType
+import android.view.View
+import android.widget.AdapterView
 import com.afollestad.materialdialogs.GravityEnum
 import com.afollestad.materialdialogs.MaterialDialog
 import com.siliconstack.carscanner.model.FloorModel
@@ -23,6 +26,12 @@ import com.siliconstack.carscanner.model.SettingDTO
 import com.siliconstack.carscanner.view.ui.base.BaseActivity
 import com.siliconstack.carscanner.view.ui.MainActivity
 import com.siliconstack.carscanner.view.ui.MainActivityListener
+import android.widget.ArrayAdapter
+import android.widget.TextView
+
+
+
+
 
 
 class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
@@ -33,7 +42,7 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
     lateinit var materialDialog: MaterialDialog
     lateinit var adapter: SettingAdapter
     val spinnerArr= arrayListOf("Location", "Floor", "Name")
-
+    var selectedPos=-1;
 
    // override fun supportFragmentInjector() = dispatchingAndroidInjector
 
@@ -56,21 +65,6 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
 
     private fun init() {
 
-        settingActivityBinding.spinner.setItems(spinnerArr)
-        settingActivityBinding.spinner.setOnItemSelectedListener { view, position, id, item ->
-            when(position){
-                0 -> {
-                    refreshListLocation()
-                }
-                1 -> {
-                    refreshListFloor()
-                }
-                2 -> {
-                    refreshListName()
-                }
-            }
-
-        }
 
         settingActivityBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
@@ -80,6 +74,35 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
             divider.setDrawable(resources.getDrawable(R.drawable.list_divider_transparent))
             addItemDecoration(divider)
             refreshListLocation()
+        }
+
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerArr)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        settingActivityBinding.spinner.adapter=adapter
+        settingActivityBinding.spinner.onItemSelectedListener=object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+                when(position){
+                    0 -> {
+                        refreshListLocation()
+                        selectedPos=0
+                    }
+                    1 -> {
+                        refreshListFloor()
+                        selectedPos=1
+                    }
+                    2 -> {
+                        refreshListName()
+                        selectedPos=2
+                    }
+                }
+            }
+
         }
 
     }
@@ -122,7 +145,7 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
                 .input("","", MaterialDialog.InputCallback { dialog, input ->
                 }).positiveText("Save").negativeText("Cancel").onPositive { dialog, which ->
                     if(!dialog.inputEditText?.text.toString().trim().isEmpty()) {
-                        when (settingActivityBinding.spinner.selectedIndex) {
+                        when (selectedPos) {
                             0 -> {
                                 mainViewModel.locationDAO.addRow(LocationModel(dialog.inputEditText?.text.toString(), 0))
                                 refreshListLocation()

@@ -40,7 +40,7 @@ class SearchAdapter(val searchListener: SearchListener, groups: List<ExpandableG
         if (item.isSelected)
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.context.resources.getColor(R.color.color_5))
         else viewHolder.itemView.setBackgroundColor(Color.WHITE)
-        viewHolder.itemView.setOnClickListener {
+        viewHolder.binding.swipeLayout.surfaceView.setOnClickListener {
             searchListener.onItemClick(item)
         }
     }

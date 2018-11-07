@@ -54,12 +54,12 @@
             android:value="0dcd11dd917778a4b872d42e3fb902d187dc76aa" />
 
         <meta-data android:name="net.hockeyapp.android.appIdentifier" android:value="${HOCKEYAPP_APP_ID}" />
-        <activity android:name=".view.ui.scan.CameraActivity" android:launchMode="singleTop" android:theme="@style/Login"/>
-        <activity android:name=".view.ui.search.SearchActivity" android:launchMode="singleTop"  />
-        <activity android:name=".view.ui.scan.ZXingScannerActivity" android:launchMode="singleTop"  />
-        <activity android:name=".view.ui.setting.SettingActivity" android:launchMode="singleTop"  />
-        <activity android:name=".view.ui.scan.ScanResultActivity" android:launchMode="singleTop" />
-        <activity android:name=".view.ui.search.VehicleActivity" android:launchMode="singleTop" />
+        <activity android:name=".view.ui.scan.CameraActivity" android:launchMode="singleTop" android:theme="@style/Login" android:screenOrientation="portrait"/>
+        <activity android:name=".view.ui.search.SearchActivity" android:launchMode="singleTop"  android:screenOrientation="portrait"/>
+        <activity android:name=".view.ui.scan.ZXingScannerActivity" android:launchMode="singleTop"  android:screenOrientation="portrait"/>
+        <activity android:name=".view.ui.setting.SettingActivity" android:launchMode="singleTop"  android:screenOrientation="portrait"/>
+        <activity android:name=".view.ui.scan.ScanResultActivity" android:launchMode="singleTop" android:screenOrientation="portrait"/>
+        <activity android:name=".view.ui.search.VehicleActivity" android:launchMode="singleTop" android:screenOrientation="portrait" />
     </application>
 
 </manifest>

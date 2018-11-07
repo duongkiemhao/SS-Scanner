@@ -87,40 +87,66 @@
                 android:layout_width="match_parent" android:textColor="@color/color_1"
                 android:layout_height="70dp" />
             <LinearLayout android:orientation="horizontal" android:layout_marginStart="10dp" android:layout_marginTop="10dp"
-                android:layout_width="wrap_content" android:layout_centerHorizontal="true"
+                android:layout_width="match_parent" android:layout_centerHorizontal="true" android:layout_marginEnd="10dp"
                 android:layout_height="wrap_content" >
                 <TextView android:layout_gravity="center_vertical"
                     android:layout_width="80dp" android:gravity="left" android:textColor="@color/white" android:text="Location"
                     android:layout_height="wrap_content" />
-                <com.jaredrummler.materialspinner.MaterialSpinner android:layout_marginLeft="10dp"
-                    android:id="@+id/spn_location" android:layout_gravity="center_vertical"
-                    android:layout_width="150dp" app:ms_background_color="#533889"
-                    app:ms_text_color="@color/white"
-                    android:layout_height="40dp"/>
+
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    android:id="@+id/spn_location" android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    app:ms_multiline="false"
+                    app:ms_enableFloatingLabel="false"
+                    app:ms_enableErrorLabel="false"
+                    app:ms_baseColor="@color/white"
+                    app:ms_highlightColor="@color/white"
+                    app:ms_thickness="0.5dp"
+                    app:ms_arrowColor="@color/white"
+                    app:ms_arrowSize="16dp"
+                    app:ms_alignLabels="false"/>
             </LinearLayout>
             <LinearLayout android:orientation="horizontal" android:layout_marginStart="10dp" android:layout_marginTop="10dp"
-                android:layout_width="wrap_content" android:layout_centerHorizontal="true"
+                android:layout_width="match_parent" android:layout_centerHorizontal="true" android:layout_marginEnd="10dp"
                 android:layout_height="wrap_content" >
                 <TextView android:layout_gravity="center_vertical"
                     android:layout_width="80dp" android:gravity="left" android:textColor="@color/white" android:text="Floor"
                     android:layout_height="wrap_content" />
-                <com.jaredrummler.materialspinner.MaterialSpinner android:layout_marginLeft="10dp"
-                    android:id="@+id/spn_floor" android:layout_gravity="center_vertical"
-                    android:layout_width="150dp" app:ms_background_color="#533889"
-                    app:ms_text_color="@color/white"
-                    android:layout_height="40dp"/>
+
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    android:id="@+id/spn_floor" android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    app:ms_multiline="false"
+                    app:ms_enableFloatingLabel="false"
+                    app:ms_enableErrorLabel="false"
+                    app:ms_baseColor="@color/white"
+                    app:ms_highlightColor="@color/white"
+                    app:ms_thickness="0.5dp"
+                    app:ms_arrowColor="@color/white"
+                    app:ms_arrowSize="16dp"
+                    app:ms_alignLabels="false"/>
             </LinearLayout>
             <LinearLayout android:orientation="horizontal" android:layout_marginStart="10dp" android:layout_marginTop="10dp"
-                android:layout_width="wrap_content" android:layout_centerHorizontal="true"
+                android:layout_width="match_parent" android:layout_centerHorizontal="true" android:layout_marginEnd="10dp"
                 android:layout_height="wrap_content" >
                 <TextView android:layout_gravity="center_vertical"
                     android:layout_width="80dp" android:gravity="left" android:textColor="@color/white" android:text="Name"
                     android:layout_height="wrap_content" />
-                <com.jaredrummler.materialspinner.MaterialSpinner android:layout_marginLeft="10dp"
-                    android:id="@+id/spn_name" android:layout_gravity="center_vertical"
-                    android:layout_width="150dp" app:ms_background_color="#533889"
-                    app:ms_text_color="@color/white"
-                    android:layout_height="40dp"/>
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    android:id="@+id/spn_name" android:layout_marginLeft="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    app:ms_multiline="false"
+                    app:ms_enableFloatingLabel="false"
+                    app:ms_enableErrorLabel="false"
+                    app:ms_baseColor="@color/white"
+                    app:ms_highlightColor="@color/white"
+                    app:ms_thickness="0.5dp"
+                    app:ms_arrowColor="@color/white"
+                    app:ms_arrowSize="16dp"
+                    app:ms_alignLabels="false"/>
             </LinearLayout>
             <EditText android:background="@drawable/textbox_gray"
                 android:id="@+id/edi_bay_number" style="@style/textbox" android:gravity="left" android:hint="Bay Number"

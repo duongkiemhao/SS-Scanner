@@ -1,14 +1,18 @@
 package com.siliconstack.carscanner.view.ui.scan
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.afollestad.materialdialogs.MaterialDialog
@@ -56,6 +60,9 @@ class ScanResultActivity : BaseActivity(){
     lateinit var rxPermissions: RxPermissions
     var result:String?=null
     var scanEnum:Int = 0
+    lateinit var listLocation:ArrayList<LocationModel>
+    lateinit var listFloor:ArrayList<FloorModel>
+    lateinit var listName:ArrayList<OperatorModel>
 
     //var photoPath: String? = null
     var photoURI:Uri?=null
@@ -84,22 +91,30 @@ class ScanResultActivity : BaseActivity(){
     }
 
 
+    @SuppressLint("CheckResult")
     fun openCameraActivity(){
-        when(scanEnum){
-            SCAN_ENUM.VIN.ordinal ->
-                startActivity<CameraActivity>()
-            SCAN_ENUM.REGO.ordinal ->
-                startActivity<CameraActivity>()
-            SCAN_ENUM.BARCODE.ordinal -> {
-                val intent = Intent(this, ZXingScannerActivity::class.java)
-                startActivityForResult(intent, REQUEST_BARCODE)
-            }
-            else -> {
-                val intent = Intent(this, ZXingScannerActivity::class.java)
-                startActivityForResult(intent, REQUEST_QRCODE)
-            }
+        rxPermissions
+                .request(Manifest.permission.CAMERA)
+                .subscribe { it: Boolean? ->
+                    if (it!!) {
+                        when(scanEnum){
+                            SCAN_ENUM.VIN.ordinal ->
+                                startActivity<CameraActivity>()
+                            SCAN_ENUM.REGO.ordinal ->
+                                startActivity<CameraActivity>()
+                            SCAN_ENUM.BARCODE.ordinal -> {
+                                val intent = Intent(this, ZXingScannerActivity::class.java)
+                                startActivityForResult(intent, REQUEST_BARCODE)
+                            }
+                            else -> {
+                                val intent = Intent(this, ZXingScannerActivity::class.java)
+                                startActivityForResult(intent, REQUEST_QRCODE)
+                            }
 
-        }
+                        }
+                    }
+                }
+
 
     }
 
@@ -161,9 +176,9 @@ class ScanResultActivity : BaseActivity(){
     }
 
     fun insertToDB(){
-        val locationId = scanResultFragmentBinding.spnLocation.getItems<LocationModel>().get(scanResultFragmentBinding.spnLocation.selectedIndex).id
-        val floorId = scanResultFragmentBinding.spnFloor.getItems<FloorModel>().get(scanResultFragmentBinding.spnFloor.selectedIndex).id
-        val nameId = scanResultFragmentBinding.spnName.getItems<OperatorModel>().get(scanResultFragmentBinding.spnName.selectedIndex).id
+        val locationId = listLocation.get(scanResultFragmentBinding.spnLocation.selectedItemPosition).id
+        val floorId = listFloor.get(scanResultFragmentBinding.spnFloor.selectedItemPosition).id
+        val nameId = listName.get(scanResultFragmentBinding.spnName.selectedItemPosition).id
         val date = Date()
         val mainModel = MainModel(0, scanResultFragmentBinding.ediScanResult.text.toString(), date.time, getType(),
                 if (locationId == 0) null else locationId, if (floorId == 0) null else floorId
@@ -203,23 +218,50 @@ class ScanResultActivity : BaseActivity(){
         rxPermissions = RxPermissions(this)
         scanResultFragmentBinding.txtTitle.text=getToolbarTitle()
 
-        val listLocation=mainViewModel.locationDAO.getAll() as ArrayList
-        listLocation.add(LocationModel("---none---",0))
+        listLocation= mainViewModel.locationDAO.getAll() as ArrayList<LocationModel>
+        listLocation.add(0,LocationModel("---none---",0))
         val adapterLocation = ArrayAdapter<LocationModel>(this,  android.R.layout.simple_spinner_dropdown_item, listLocation);
         adapterLocation.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
         scanResultFragmentBinding.spnLocation.setAdapter(adapterLocation)
+        scanResultFragmentBinding.spnLocation.onItemSelectedListener=object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
 
-        val listFloor=mainViewModel.floorDAO.getAll() as ArrayList
-        listFloor.add(FloorModel("---none---",0))
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+            }
+
+        }
+
+        listFloor= mainViewModel.floorDAO.getAll() as ArrayList<FloorModel>
+        listFloor.add(0,FloorModel("---none---",0))
         val adapterFloor = ArrayAdapter<FloorModel>(this,  android.R.layout.simple_spinner_dropdown_item, listFloor);
         adapterFloor.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
         scanResultFragmentBinding.spnFloor.setAdapter(adapterFloor)
+        scanResultFragmentBinding.spnFloor.onItemSelectedListener=object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
 
-        val listName=mainViewModel.nameDAO.getAll() as ArrayList
-        listName.add(OperatorModel("---none---",0))
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+            }
+
+        }
+
+        listName=mainViewModel.nameDAO.getAll() as ArrayList
+        listName.add(0,OperatorModel("---none---",0))
         val adapterName= ArrayAdapter<OperatorModel>(this,  android.R.layout.simple_spinner_dropdown_item, listName);
         adapterName.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
         scanResultFragmentBinding.spnName.setAdapter(adapterName)
+        scanResultFragmentBinding.spnName.onItemSelectedListener=object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+            }
+
+        }
 
     }
 

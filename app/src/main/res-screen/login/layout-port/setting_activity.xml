@@ -20,11 +20,20 @@
                 <TextView android:layout_gravity="center_vertical"
                     android:layout_width="wrap_content" android:textColor="@color/white" android:text="Please choose"
                     android:layout_height="wrap_content" />
-                <com.jaredrummler.materialspinner.MaterialSpinner android:layout_marginLeft="10dp"
-                    android:id="@+id/spinner" android:layout_gravity="center_vertical"
-                    android:layout_width="150dp" app:ms_background_color="@color/white"
-                    app:ms_text_color="@color/color_1"
-                    android:layout_height="40dp"/>
+
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    android:id="@+id/spinner" android:layout_marginLeft="10dp"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    app:ms_multiline="false"
+                    app:ms_enableFloatingLabel="false"
+                    app:ms_enableErrorLabel="false"
+                    app:ms_baseColor="@color/white"
+                    app:ms_highlightColor="@color/white"
+                    app:ms_thickness="0.5dp"
+                    app:ms_arrowColor="@color/white"
+                    app:ms_arrowSize="16dp"
+                    app:ms_alignLabels="false"/>
             </LinearLayout>
             <android.support.v7.widget.RecyclerView android:layout_below="@+id/layout_spinner" android:layout_marginTop="20dp"
                 android:layout_width="match_parent" android:layout_marginStart="20dp" android:layout_marginEnd="20dp"
