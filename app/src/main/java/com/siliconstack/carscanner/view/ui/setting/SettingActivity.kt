@@ -65,7 +65,7 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
 
     private fun init() {
 
-
+        setTranslucentBarNoScrollView()
         settingActivityBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
             this@SettingActivity.adapter = SettingAdapter(this@SettingActivity)
@@ -170,6 +170,9 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
         settingActivityBinding.btnAdd.setOnClickListener { view->
             createNewDialog()
             materialDialog.show()
+        }
+        settingActivityBinding.btnBack.setOnClickListener {
+            onBackPressed()
         }
     }
 

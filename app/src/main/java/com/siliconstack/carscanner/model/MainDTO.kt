@@ -11,14 +11,21 @@ import java.util.*
 import kotlin.Comparator
 
 
-open class MainDTO() : Parcelable,Comparator<MainDTO> {
-        override fun compare(o1: MainDTO?, o2: MainDTO?): Int {
-                return  (o1!!.timestamp!! - o2!!.timestamp!!).toInt()
-        }
+open class MainDTO() : Parcelable, Comparator<MainDTO> {
+    override fun compare(o1: MainDTO?, o2: MainDTO?): Int {
+        if(!isDesc)
+            return ((o1?.timestamp?:0)-(o2?.timestamp?:0)).toInt()
+        return return ((o2?.timestamp?:0)-(o1?.timestamp?:0)).toInt()
+    }
+
+    var isDesc:Boolean = false
+
+    constructor(isDesc:Boolean) : this() {
+        this.isDesc=isDesc
+    }
 
 
-
-        var id:Int? = null
+    var id:Int? = null
         var scanText:String?=null
         var timestamp:Long?=null
         var type:Int?=null
@@ -34,52 +41,58 @@ open class MainDTO() : Parcelable,Comparator<MainDTO> {
         var dateString:String?=null
 
         var isSelected:Boolean=false
+        var compareTime:String=""
+        var compareTimeFullStr:String=""
 
-        constructor(parcel: Parcel) : this() {
-                id = parcel.readValue(Int::class.java.classLoader) as? Int
-                scanText = parcel.readString()
-                timestamp = parcel.readValue(Long::class.java.classLoader) as? Long
-                type = parcel.readValue(Int::class.java.classLoader) as? Int
-                locationID = parcel.readValue(Int::class.java.classLoader) as? Int
-                locationName = parcel.readString()
-                floorID = parcel.readValue(Int::class.java.classLoader) as? Int
-                floorName = parcel.readString()
-                operatorID = parcel.readValue(Int::class.java.classLoader) as? Int
-                operatorName = parcel.readString()
-                bayNumber = parcel.readString()
-                dateString = parcel.readString()
-                isSelected = parcel.readByte() != 0.toByte()
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readValue(Int::class.java.classLoader) as? Int
+        scanText = parcel.readString()
+        timestamp = parcel.readValue(Long::class.java.classLoader) as? Long
+        type = parcel.readValue(Int::class.java.classLoader) as? Int
+        locationID = parcel.readValue(Int::class.java.classLoader) as? Int
+        locationName = parcel.readString()
+        floorID = parcel.readValue(Int::class.java.classLoader) as? Int
+        floorName = parcel.readString()
+        operatorID = parcel.readValue(Int::class.java.classLoader) as? Int
+        operatorName = parcel.readString()
+        bayNumber = parcel.readString()
+        dateString = parcel.readString()
+        isSelected = parcel.readByte() != 0.toByte()
+        compareTime = parcel.readString()
+        compareTimeFullStr = parcel.readString()
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(id)
+        parcel.writeString(scanText)
+        parcel.writeValue(timestamp)
+        parcel.writeValue(type)
+        parcel.writeValue(locationID)
+        parcel.writeString(locationName)
+        parcel.writeValue(floorID)
+        parcel.writeString(floorName)
+        parcel.writeValue(operatorID)
+        parcel.writeString(operatorName)
+        parcel.writeString(bayNumber)
+        parcel.writeString(dateString)
+        parcel.writeByte(if (isSelected) 1 else 0)
+        parcel.writeString(compareTime)
+        parcel.writeString(compareTimeFullStr)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<MainDTO> {
+        override fun createFromParcel(parcel: Parcel): MainDTO {
+            return MainDTO(parcel)
         }
 
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-                parcel.writeValue(id)
-                parcel.writeString(scanText)
-                parcel.writeValue(timestamp)
-                parcel.writeValue(type)
-                parcel.writeValue(locationID)
-                parcel.writeString(locationName)
-                parcel.writeValue(floorID)
-                parcel.writeString(floorName)
-                parcel.writeValue(operatorID)
-                parcel.writeString(operatorName)
-                parcel.writeString(bayNumber)
-                parcel.writeString(dateString)
-                parcel.writeByte(if (isSelected) 1 else 0)
+        override fun newArray(size: Int): Array<MainDTO?> {
+            return arrayOfNulls(size)
         }
-
-        override fun describeContents(): Int {
-                return 0
-        }
-
-        companion object CREATOR : Parcelable.Creator<MainDTO> {
-                override fun createFromParcel(parcel: Parcel): MainDTO {
-                        return MainDTO(parcel)
-                }
-
-                override fun newArray(size: Int): Array<MainDTO?> {
-                        return arrayOfNulls(size)
-                }
-        }
+    }
 
 
 }

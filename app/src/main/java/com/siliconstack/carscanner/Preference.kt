@@ -10,14 +10,8 @@ import com.siliconstack.carscanner.model.SelectionModel
 object PreferenceSetting : PreferenceHolder() {
 
 
-    object UserSetting : KotprefModel() {
-        var token by stringPref("")
-        var username by stringPref("")
-        var password by stringPref("")
-        var isRememberMe by booleanPref(false)
-        var dealerKey by stringPref("")
-
-    }
-
+    var locationPosition: Int by bindToPreferenceField(0)
+    var floorPosition: Int by bindToPreferenceField(0)
+    var namePosition: Int by bindToPreferenceField(0)
 
 }

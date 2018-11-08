@@ -2,6 +2,7 @@ package com.siliconstack.carscanner.view.ui.base
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -28,10 +29,6 @@ open class BaseActivity : AppCompatActivity(){
     lateinit var mainViewModel: MainViewModel
     lateinit var progressDialog: MaterialDialog
 
-    var isLoginActivity=false
-    var isIdleTimeOut=false
-    var isResume=false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +46,7 @@ open class BaseActivity : AppCompatActivity(){
     open fun setTranslucentToolbar(){
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this,R.color.color_1));
+        window.setStatusBarColor(Color.parseColor("#533889"));
 
     }
     open fun setTranslucentBarNoScrollView(){
@@ -58,43 +55,6 @@ open class BaseActivity : AppCompatActivity(){
             w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         }
     }
-
-    override fun onUserInteraction() {
-        super.onUserInteraction()
-
-    }
-
-    fun showIdleTimeOutDialog(){
-        DialogHelper.materialDialog("Auto Logoff has occurred due to inactivity","Close", MaterialDialog.SingleButtonCallback { dialog, which ->
-            dialog.dismiss()
-            backToLogin()
-        },this@BaseActivity).show()
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        isResume=true
-        if(isIdleTimeOut)
-            showIdleTimeOutDialog()
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        isResume=false
-
-    }
-
-
-    fun backToLogin(){
-        PreferenceSetting.UserSetting!!.password=""
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
-    }
-
-
 
 }
 

@@ -2,6 +2,7 @@ package com.siliconstack.carscanner.viewmodel
 
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.persistence.db.SimpleSQLiteQuery
+import com.orhanobut.logger.Logger
 import com.siliconstack.carscanner.dao.MainDAO
 import com.siliconstack.carscanner.AppApplication
 import com.siliconstack.carscanner.config.Config
@@ -38,7 +39,9 @@ class MainViewModel @Inject constructor (application: AppApplication): AndroidVi
     }
 
     fun filterListSearch(isDesc:Boolean,offset:Int,orderBy:String):List<MainDTO> {
-        return mainDAO.query(SimpleSQLiteQuery("select a.*, b.name as locationName,c.name as floorName,d.name as operatorName ,0 as isSelected   from MainModel a left join LocationModel b on a.locationID=b.id left join FloorModel c on a.floorID=c.id left join OperatorModel d on a.locationID=d.id where a.scanText like '%"+keyword+"%' or b.name like '%"+keyword+"%' or c.name like '%"+keyword+"%' or d.name like '%"+keyword+"%' or a.bayNumber like '%"+keyword+"%' order by "+orderBy+" "+(if(isDesc) "desc" else "asc")+" limit "+Config.LIMIT+" offset "+offset)) as ArrayList<MainDTO>
+        val query="select a.*, b.name as locationName,c.name as floorName,d.name as operatorName ,0 as isSelected   from MainModel a left join LocationModel b on a.locationID=b.id left join FloorModel c on a.floorID=c.id left join OperatorModel d on a.locationID=d.id where a.scanText like '%"+keyword+"%' or b.name like '%"+keyword+"%' or c.name like '%"+keyword+"%' or d.name like '%"+keyword+"%' or a.bayNumber like '%"+keyword+"%' order by "+orderBy+" "+(if(isDesc) "desc" else "asc")+" limit "+Config.LIMIT+" offset "+offset
+        Logger.d(query)
+        return mainDAO.query(SimpleSQLiteQuery(query)) as ArrayList<MainDTO>
     }
 
 

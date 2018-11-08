@@ -22,6 +22,7 @@ import com.google.api.services.vision.v1.Vision
 import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.model.*
 import com.siliconstack.carscanner.AppApplication
+import com.siliconstack.carscanner.PreferenceSetting
 import com.siliconstack.carscanner.R
 import com.siliconstack.carscanner.config.Config
 import com.siliconstack.carscanner.config.Constant
@@ -75,7 +76,7 @@ class ScanResultActivity : BaseActivity(){
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         initViewBinding()
-        setTranslucentBarNoScrollView()
+        setTranslucentToolbar()
 
         EventBus.getDefault().register(this)
         scanEnum=intent.getIntExtra("scanEnum",0)
@@ -229,6 +230,7 @@ class ScanResultActivity : BaseActivity(){
             }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+                PreferenceSetting.locationPosition=position
             }
 
         }
@@ -244,6 +246,7 @@ class ScanResultActivity : BaseActivity(){
             }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+                PreferenceSetting.floorPosition=position
             }
 
         }
@@ -259,9 +262,13 @@ class ScanResultActivity : BaseActivity(){
             }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 (parent!!.getChildAt(0) as TextView).setTextColor(Color.WHITE)
+                PreferenceSetting.namePosition=position
             }
 
         }
+        scanResultFragmentBinding.spnLocation.setSelection(PreferenceSetting.locationPosition)
+        scanResultFragmentBinding.spnFloor.setSelection(PreferenceSetting.floorPosition)
+        scanResultFragmentBinding.spnName.setSelection(PreferenceSetting.namePosition)
 
     }
 
@@ -271,11 +278,11 @@ class ScanResultActivity : BaseActivity(){
             SCAN_ENUM.VIN.ordinal ->{
                 val matcher = Pattern.compile(PATTERN_VIN).matcher(result)
                 if (matcher.matches()) {
-                    scanResultFragmentBinding.ediScanResult.setText(matcher.group(1))
+                    scanResultFragmentBinding.ediScanResult.setText(matcher.group(1).replace("[^0-9A-Z]".toRegex(), ""))
                 }
             }
             SCAN_ENUM.REGO.ordinal ->{
-                scanResultFragmentBinding.ediScanResult.setText(result)
+                scanResultFragmentBinding.ediScanResult.setText(result?.replace("[^0-9A-Z]".toRegex(), ""))
             }
         }
     }

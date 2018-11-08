@@ -16,6 +16,7 @@ import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup
 import com.thoughtbot.expandablerecyclerview.viewholders.ChildViewHolder
 import com.thoughtbot.expandablerecyclerview.viewholders.GroupViewHolder
 import org.jetbrains.anko.startActivity
+import org.joda.time.Days
 import java.util.*
 
 
@@ -31,7 +32,7 @@ class SearchAdapter(val searchListener: SearchListener, groups: List<ExpandableG
         viewHolder.binding.txtBay.setText(item.bayNumber)
         viewHolder.binding.txtName.setText(item.operatorName)
         val dateTime = Date(item.timestamp ?: 0)
-        viewHolder.binding.txtTime.setText(DateUtility.parseDateToDateTimeStr(com.siliconstack.carscanner.config.Constant.COMBINE_DATE_TIME_FORMAT,Date(item.timestamp?:0)))
+        viewHolder.binding.txtTime.setText(DateUtility.parseDateToDateTimeStr("dd/MM/yyyy",Date(item.timestamp?:0)))
 
         viewHolder.binding.btnDelete.setOnClickListener {
             searchListener.deleteItem(item)
@@ -43,6 +44,7 @@ class SearchAdapter(val searchListener: SearchListener, groups: List<ExpandableG
         viewHolder.binding.swipeLayout.surfaceView.setOnClickListener {
             searchListener.onItemClick(item)
         }
+        viewHolder.binding.txtCompare.text=item.compareTime
     }
 
     override fun onBindGroupViewHolder(holder: MyGroupViewHolder?, flatPosition: Int, group: ExpandableGroup<*>?) {

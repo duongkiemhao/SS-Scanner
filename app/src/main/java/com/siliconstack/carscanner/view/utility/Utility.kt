@@ -260,12 +260,6 @@ class Utility{
             return matcher.matches()
         }
 
-        fun getUrlWithHeaders(url: String): GlideUrl {
-            return GlideUrl(url, LazyHeaders.Builder()
-                    .addHeader("Bearer", PreferenceSetting.UserSetting.token)
-                    .build())
-        }
-
         fun saveScreenShot(view : View):String?{
             view.setDrawingCacheEnabled(true);
             val screenshot= view.getDrawingCache(true).copy(Bitmap.Config.ARGB_8888, false);

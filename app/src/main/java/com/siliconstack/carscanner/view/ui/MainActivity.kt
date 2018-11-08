@@ -35,7 +35,7 @@ class MainActivity : BaseActivity() , MainActivityListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
+        setTranslucentBarNoScrollView()
         initViewBinding()
         setListener()
         init()
@@ -49,8 +49,6 @@ class MainActivity : BaseActivity() , MainActivityListener {
     }
 
     private fun init() {
-        isLoginActivity = true
-
         setSupportActionBar(mainActivityBinding.toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         mainActivityBinding.txtAppVersion.text="App Version v"+Utility.getAppVersionName()

@@ -31,11 +31,16 @@ import com.siliconstack.carscanner.viewmodel.MainViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.android.AndroidInjection
 import es.dmoral.toasty.Toasty
+import org.jetbrains.anko.collections.forEachReversedWithIndex
 import org.jetbrains.anko.startActivity
+import org.joda.time.Days
+import org.joda.time.LocalDateTime
+import org.joda.time.Period
 import java.io.File
 import java.io.FileWriter
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class SearchActivity : BaseActivity(), SearchListener {
@@ -71,6 +76,10 @@ class SearchActivity : BaseActivity(), SearchListener {
 
     private fun init() {
         mainViewModel.initItems()
+        var divider = DividerItemDecoration(this, RecyclerView.VERTICAL)
+        divider.setDrawable(resources.getDrawable(R.drawable.list_divider_transparent))
+        searchActivityBinding.recyclerView.addItemDecoration(divider)
+
         bindAdapter()
         setTranslucentBarNoScrollView()
         searchActivityBinding.txtLocation.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0)
@@ -89,7 +98,7 @@ class SearchActivity : BaseActivity(), SearchListener {
                 //adapter.keyword=s.toString()
                 mainViewModel.keyword=s.toString()
                 offset=0
-                mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "locationName") as ArrayList<MainDTO>
+                mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
                 bindAdapter()
 
             }
@@ -122,7 +131,7 @@ class SearchActivity : BaseActivity(), SearchListener {
             searchActivityBinding.txtDate.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,if(isDesc) R.drawable.ic_down else R.drawable.ic_up,0)
             offset=0
             isLoading=false
-            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "locationName") as ArrayList<MainDTO>
+            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
             bindAdapter()
             searchActivityBinding.recyclerView.postDelayed({
                 searchActivityBinding.recyclerView.scrollToPosition(0)
@@ -138,7 +147,7 @@ class SearchActivity : BaseActivity(), SearchListener {
             offset=0
             isLoading=false
 
-            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "locationName") as ArrayList<MainDTO>
+            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
             bindAdapter()
             searchActivityBinding.recyclerView.postDelayed({
                 searchActivityBinding.recyclerView.scrollToPosition(0)
@@ -162,7 +171,7 @@ class SearchActivity : BaseActivity(), SearchListener {
 
                     Handler().postDelayed({
                         offset+=Config.LIMIT
-                        val items=mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "locationName")
+                        val items=mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name")
                         mainViewModel.items.addAll(items)
 
                         adapter = SearchAdapter(this@SearchActivity, getListExpandGroup())
@@ -184,6 +193,21 @@ class SearchActivity : BaseActivity(), SearchListener {
     }
 
     fun getListExpandGroup():List<SearchDTO>{
+        //process timestamp compare
+        var hashMap=HashMap<String,Long>()
+        var key=""
+        var value:Long?=0
+        if(isDateSorting) {
+            if (isDesc) {
+                mainViewModel.items.forEachReversedWithIndex { i, it ->
+                    processCompareTimeInList(key, it, value, hashMap)
+                }
+            } else mainViewModel.items.forEachIndexed { index, it ->
+                processCompareTimeInList(key, it, value, hashMap)
+            }
+        }
+
+        //split into expandable list master/child
         var items= ArrayList<SearchDTO>()
         var title:String=""
         var listMainDTO:ArrayList<MainDTO> = arrayListOf()
@@ -224,9 +248,57 @@ class SearchActivity : BaseActivity(), SearchListener {
                 items.add(SearchDTO(title,listMainDTO))
             }
         }
+        if(!isDateSorting){
+            items.forEach {
+                Collections.sort(it.items,MainDTO(isDesc))
+                if(isDesc) {
+                    it.items.forEachReversedWithIndex { i, it ->
+                        processCompareTimeInList(key, it, value, hashMap)
+                    }
+                }
+                else{
+                    it.items.forEachIndexed { index, it ->
+                        processCompareTimeInList(key, it, value, hashMap)
+                    }
+                }
+            }
+        }
 
         return items
 
+    }
+
+    private fun processCompareTimeInList(key: String, it: MainDTO, value: Long?, hashMap: HashMap<String, Long>) {
+        var key1 = key
+        var value1 = value
+        key1 = it.scanText + "-" + it.locationID + "-" + it.floorID + "-" + it.bayNumber
+        value1 = hashMap.get(key1)
+        if (hashMap.size == 0) {
+            hashMap.put(key1, it.timestamp ?: 0)
+        } else {
+            if (value1 == null)
+                hashMap.put(key1, it.timestamp ?: 0)
+            else {
+                var period: Period
+                period = Period(value1 ?: 0, it.timestamp ?: 0)
+
+                val days=Days.daysBetween(LocalDateTime(value1?:0),LocalDateTime(it.timestamp?:0)).days
+                if(days>0)
+                    it.compareTimeFullStr=days.toString()+"day(s)"
+                else {
+                    it.compareTimeFullStr=period.hours.toString()+"hour(s) "+period.minutes+"minute(s)"
+                }
+
+                it.compareTime = if (period.years > 0) period.years.toString() + "y" else
+                    if (period.months > 0) period.months.toString() + "M" else
+                    if (period.weeks > 0) period.weeks.toString() + "w" else
+                    if (period.days > 0) period.days.toString() + "d" else
+                        if (period.hours > 0) period.hours.toString() + "h" else
+                            if (period.minutes > 0) period.minutes.toString() + "m" else
+                                ""
+                //hashMap.put(key1, it.timestamp ?: 0)
+            }
+        }
     }
 
     fun export() {
@@ -329,13 +401,8 @@ class SearchActivity : BaseActivity(), SearchListener {
     fun bindAdapter(){
         searchActivityBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-
             this@SearchActivity.adapter = SearchAdapter(this@SearchActivity, getListExpandGroup())
             adapter = this@SearchActivity.adapter
-            var divider = DividerItemDecoration(context, RecyclerView.VERTICAL)
-            divider.setDrawable(resources.getDrawable(R.drawable.list_divider_transparent))
-            addItemDecoration(divider)
-
         }
 
     }

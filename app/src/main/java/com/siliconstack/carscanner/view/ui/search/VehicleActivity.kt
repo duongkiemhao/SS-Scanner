@@ -39,7 +39,7 @@ class VehicleActivity : AppCompatActivity(){
         vehicleDetailBinding.txtBay.text=mainDTO.bayNumber
         vehicleDetailBinding.txtOperator.text=mainDTO.operatorName
         vehicleDetailBinding.txtTimestamp.text=DateUtility.parseDateToDateTimeStr(Constant.COMBINE_DATE_TIME_FORMAT, Date(mainDTO.timestamp?:0))
-
+        vehicleDetailBinding.txtCompare.text=mainDTO.compareTimeFullStr
         vehicleDetailBinding.btnBack.setOnClickListener {
             finish()
             overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
