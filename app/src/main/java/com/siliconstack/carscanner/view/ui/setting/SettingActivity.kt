@@ -14,6 +14,7 @@ import org.jetbrains.anko.startActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.telephony.SignalStrength
 import android.text.InputType
 import android.view.View
 import android.widget.AdapterView
@@ -36,7 +37,8 @@ import android.widget.TextView
 
 class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
 
-//    @Inject
+
+    //    @Inject
 //    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     lateinit var settingActivityBinding: SettingActivityBinding
     lateinit var materialDialog: MaterialDialog
@@ -203,7 +205,9 @@ class SettingActivity: BaseActivity() , MainActivityListener, SettingListener {
             }
         }
     }
+    override fun onSignalReceived(signalStrength: SignalStrength) {
 
+    }
 
 }
 

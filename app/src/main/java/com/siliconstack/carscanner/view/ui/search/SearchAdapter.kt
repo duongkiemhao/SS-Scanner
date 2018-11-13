@@ -20,7 +20,7 @@ import org.joda.time.Days
 import java.util.*
 
 
-class SearchAdapter(val searchListener: SearchListener, groups: List<ExpandableGroup<*>>) : ExpandableRecyclerViewAdapter<SearchAdapter.MyGroupViewHolder, SearchAdapter.MyChildViewHolder>(groups) {
+class SearchAdapter(val searchListener: ListViewFragmentListener, groups: List<ExpandableGroup<*>>) : ExpandableRecyclerViewAdapter<SearchAdapter.MyGroupViewHolder, SearchAdapter.MyChildViewHolder>(groups) {
     override fun onBindChildViewHolder(viewHolder: MyChildViewHolder?, flatPosition: Int, group: ExpandableGroup<*>?, childIndex: Int) {
 
         var item = group!!.items.get(childIndex) as MainDTO
@@ -45,6 +45,7 @@ class SearchAdapter(val searchListener: SearchListener, groups: List<ExpandableG
             searchListener.onItemClick(item)
         }
         viewHolder.binding.txtCompare.text=item.compareTime
+
     }
 
     override fun onBindGroupViewHolder(holder: MyGroupViewHolder?, flatPosition: Int, group: ExpandableGroup<*>?) {

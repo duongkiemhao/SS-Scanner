@@ -19,9 +19,15 @@ data class MainModel (
         var locationID:Int?=null,
         var floorID:Int?=null,
         var operatorID:Int?=null,
-        var bayNumber:String?=null
+
+        var bayNumber:String?=null,
+                var lat:Double?=null,
+        var lng:Double?=null,
+        var image:String?=null
+
 ){
         var dateString:String?=null
+
 
 
 

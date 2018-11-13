@@ -1,5 +1,6 @@
 package com.siliconstack.carscanner.config
 
+import com.google.android.gms.maps.GoogleMap
 import com.siliconstack.carscanner.BuildConfig
 
 class Config{
@@ -17,6 +18,8 @@ class Config{
 
             var DATE_TIME_PATTERN="dd/MM/yyyy HH:mm"
             var LIMIT=5000
+            var MAP_ZOOM=18F
+            var MAP_DEFAULT_TYPE= GoogleMap.MAP_TYPE_TERRAIN
 
 
 

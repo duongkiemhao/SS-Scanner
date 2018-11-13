@@ -5,10 +5,12 @@ import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.databinding.adapters.ViewGroupBindingAdapter.setListener
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -30,6 +32,8 @@ import com.siliconstack.carscanner.view.utility.Utility
 import com.siliconstack.carscanner.viewmodel.MainViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.android.AndroidInjection
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import es.dmoral.toasty.Toasty
 import org.jetbrains.anko.collections.forEachReversedWithIndex
 import org.jetbrains.anko.startActivity
@@ -39,33 +43,25 @@ import org.joda.time.Period
 import java.io.File
 import java.io.FileWriter
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 
-class SearchActivity : BaseActivity(), SearchListener {
+class SearchActivity : BaseActivity(), SearchListener, HasSupportFragmentInjector {
 
+    @Inject
+    lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Fragment>
     lateinit var searchActivityBinding: SearchActivityBinding
-
-    lateinit var adapter: SearchAdapter
-    var isDesc=true
-    val rxPermissions by lazy {
-        RxPermissions(this)
-    }
-
-    var offset=0
-    var isLoading=false
-    var isDateSorting=true
-
+    var isListView=true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         initViewBinding()
-        setListener()
         init()
-
+        setListener()
     }
 
     private fun initViewBinding() {
@@ -74,348 +70,37 @@ class SearchActivity : BaseActivity(), SearchListener {
         AppApplication.appComponent.injectViewModel(mainViewModel)
     }
 
-    private fun init() {
-        mainViewModel.initItems()
-        var divider = DividerItemDecoration(this, RecyclerView.VERTICAL)
-        divider.setDrawable(resources.getDrawable(R.drawable.list_divider_transparent))
-        searchActivityBinding.recyclerView.addItemDecoration(divider)
-
-        bindAdapter()
-        setTranslucentBarNoScrollView()
-        searchActivityBinding.txtLocation.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0)
-        searchActivityBinding.recyclerView.postDelayed({
-            searchActivityBinding.recyclerView.addOnScrollListener(mScrollListener)
-        }
-                ,2000)
-        if(mainViewModel.items.count()<Config.LIMIT)
-            isLoading=true
-
-    }
-
-    private fun setListener() {
-        searchActivityBinding.ediKeyword.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                //adapter.keyword=s.toString()
-                mainViewModel.keyword=s.toString()
-                offset=0
-                mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
-                bindAdapter()
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-        })
-        searchActivityBinding.btnExport.setOnClickListener {
-            rxPermissions
-                    .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    .subscribe { it: Boolean? ->
-                        if (it!!) {
-                            export()
-                        }
-                    }
-        }
+    fun setListener(){
         searchActivityBinding.btnBack.setOnClickListener {
             onBackPressed()
         }
-
-        searchActivityBinding.txtDate.setOnClickListener {
-            isDateSorting=true
-            isDesc=!isDesc
-            searchActivityBinding.txtLocation.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0)
-            searchActivityBinding.txtDate.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,if(isDesc) R.drawable.ic_down else R.drawable.ic_up,0)
-            offset=0
-            isLoading=false
-            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
-            bindAdapter()
-            searchActivityBinding.recyclerView.postDelayed({
-                searchActivityBinding.recyclerView.scrollToPosition(0)
-            },300)
-
-
-        }
-        searchActivityBinding.txtLocation.setOnClickListener {
-            isDateSorting=false
-            isDesc=!isDesc
-            searchActivityBinding.txtDate.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,0,0)
-            searchActivityBinding.txtLocation.setCompoundDrawablesRelativeWithIntrinsicBounds(0,0,if(isDesc) R.drawable.ic_down else R.drawable.ic_up,0)
-            offset=0
-            isLoading=false
-
-            mainViewModel.items= mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name") as ArrayList<MainDTO>
-            bindAdapter()
-            searchActivityBinding.recyclerView.postDelayed({
-                searchActivityBinding.recyclerView.scrollToPosition(0)
-            },300)
-
-
-        }
-    }
-
-    var mScrollListener: RecyclerView.OnScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-            if (isLoading)
-                return
-            val visibleItemCount = searchActivityBinding.recyclerView.layoutManager.getChildCount()
-            val totalItemCount = searchActivityBinding.recyclerView.layoutManager.getItemCount()
-            val pastVisibleItems = (searchActivityBinding.recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-
-
-            if (pastVisibleItems + visibleItemCount >= totalItemCount) {
-                    searchActivityBinding.recyclerView.removeOnScrollListener(this)
-
-                    Handler().postDelayed({
-                        offset+=Config.LIMIT
-                        val items=mainViewModel.filterListSearch(isDesc,offset,if(isDateSorting) "a.timestamp" else "b.name")
-                        mainViewModel.items.addAll(items)
-
-                        adapter = SearchAdapter(this@SearchActivity, getListExpandGroup())
-                        searchActivityBinding.recyclerView.adapter=adapter
-                        isLoading=items.count()<Config.LIMIT
-
-                        Handler().postDelayed({
-                            searchActivityBinding.recyclerView.addOnScrollListener(this)
-                        },1000)
-
-
-                    },1000)
-
-                    isLoading = true
-
-
-            }
-        }
-    }
-
-    fun getListExpandGroup():List<SearchDTO>{
-        //process timestamp compare
-        var hashMap=HashMap<String,Long>()
-        var key=""
-        var value:Long?=0
-        if(isDateSorting) {
-            if (isDesc) {
-                mainViewModel.items.forEachReversedWithIndex { i, it ->
-                    processCompareTimeInList(key, it, value, hashMap)
-                }
-            } else mainViewModel.items.forEachIndexed { index, it ->
-                processCompareTimeInList(key, it, value, hashMap)
-            }
-        }
-
-        //split into expandable list master/child
-        var items= ArrayList<SearchDTO>()
-        var title:String=""
-        var listMainDTO:ArrayList<MainDTO> = arrayListOf()
-        mainViewModel.items.forEachIndexed { index, model ->
-            if(index==0) {
-                if(isDateSorting)
-                    title=DateUtility.parseDateToDateTimeStr(Constant.UI_DATE_FORMAT, Date(model.timestamp?:0))?:""
-                else title=model.locationName?:""
-                listMainDTO.add(model)
-
+        searchActivityBinding.btnSwitch.setOnClickListener {
+            isListView=!isListView
+            if(isListView) {
+                supportFragmentManager.beginTransaction().replace(R.id.content, ListViewFragment.newInstance()).commit()
+                searchActivityBinding.btnSwitch.text="MapView"
             }
             else{
-                if(isDateSorting) {
-                    if (Utility.compare2DatePart(Date(model.timestamp
-                                    ?: 0), Date(mainViewModel.items.get(index - 1).timestamp
-                                    ?: 0)) == 0) {
-                        listMainDTO.add(model)
-                    } else {
-                        items.add(SearchDTO(title, listMainDTO))
-                        title = DateUtility.parseDateToDateTimeStr(Constant.UI_DATE_FORMAT, Date(model.timestamp
-                                    ?: 0)) ?: ""
-                        listMainDTO = arrayListOf()
-                        listMainDTO.add(model)
-                    }
-                }
-                else{
-                    if (model.locationName==mainViewModel.items.get(index - 1).locationName) {
-                        listMainDTO.add(model)
-                    } else {
-                        items.add(SearchDTO(title, listMainDTO))
-                        title=model.locationName?:""
-                        listMainDTO = arrayListOf()
-                        listMainDTO.add(model)
-                    }
-                }
-            }
-            if(index==mainViewModel.items.count()-1){
-                items.add(SearchDTO(title,listMainDTO))
+                supportFragmentManager.beginTransaction().replace(R.id.content,MapViewFragment.newInstance()).commit()
+                searchActivityBinding.btnSwitch.text="ListView"
             }
         }
-        if(!isDateSorting){
-            items.forEach {
-                Collections.sort(it.items,MainDTO(isDesc))
-                if(isDesc) {
-                    it.items.forEachReversedWithIndex { i, it ->
-                        processCompareTimeInList(key, it, value, hashMap)
-                    }
-                }
-                else{
-                    it.items.forEachIndexed { index, it ->
-                        processCompareTimeInList(key, it, value, hashMap)
-                    }
-                }
-            }
-        }
-
-        return items
-
-    }
-
-    private fun processCompareTimeInList(key: String, it: MainDTO, value: Long?, hashMap: HashMap<String, Long>) {
-        var key1 = key
-        var value1 = value
-        key1 = it.scanText + "-" + it.locationID + "-" + it.floorID + "-" + it.bayNumber
-        value1 = hashMap.get(key1)
-        if (hashMap.size == 0) {
-            hashMap.put(key1, it.timestamp ?: 0)
-        } else {
-            if (value1 == null)
-                hashMap.put(key1, it.timestamp ?: 0)
-            else {
-                var period: Period
-                period = Period(value1 ?: 0, it.timestamp ?: 0)
-
-                val days=Days.daysBetween(LocalDateTime(value1?:0),LocalDateTime(it.timestamp?:0)).days
-                if(days>0)
-                    it.compareTimeFullStr=days.toString()+"day(s)"
-                else {
-                    it.compareTimeFullStr=period.hours.toString()+"hour(s) "+period.minutes+"minute(s)"
-                }
-
-                it.compareTime = if (period.years > 0) period.years.toString() + "y" else
-                    if (period.months > 0) period.months.toString() + "M" else
-                    if (period.weeks > 0) period.weeks.toString() + "w" else
-                    if (period.days > 0) period.days.toString() + "d" else
-                        if (period.hours > 0) period.hours.toString() + "h" else
-                            if (period.minutes > 0) period.minutes.toString() + "m" else
-                                ""
-                //hashMap.put(key1, it.timestamp ?: 0)
-            }
-        }
-    }
-
-    fun export() {
-        val exportDir = File(Environment.getExternalStorageDirectory(), "");
-        if (!exportDir.exists()) {
-            exportDir.mkdirs();
-        }
-        val filePath = exportDir.absolutePath + "/" + resources.getString(R.string.app_name) + ".csv"
-        val file = File(filePath)
-        try {
-            file.createNewFile();
-            val csvWrite = CSVWriter(FileWriter(file));
-            val columnName = arrayOf("Value","Location","Floor","Bay","Name","Date")
-            csvWrite.writeNext(columnName);
-            var isFound=false
-            adapter.groups?.forEach {
-                it.items.forEach {
-                    val item=it as MainDTO
-                    if(item.isSelected) {
-                        isFound=true
-                        val arrStr = arrayOf(item.scanText, item.locationName,item.floorName,item.bayNumber,item.operatorName,item.dateString)
-                        csvWrite.writeNext(arrStr);
-                    }
-                }
-
-            }
-            csvWrite.close();
-
-            if (!isFound) {
-                Toasty.info(this, "No selected records to export").show()
-            } else {
-                DialogHelper.materialDialog("Exported to " + filePath, "Close", "Mail",
-                        MaterialDialog.SingleButtonCallback { dialog, which ->
-                            dialog.dismiss()
-                        }, MaterialDialog.SingleButtonCallback { dialog, which ->
-                            //openFile(file)
-                            sendMail(file)
-                            dialog.dismiss()
-                }, this@SearchActivity).show()
-            }
-        } catch (exp: java.lang.Exception) {
-            Toasty.error(this, exp.message ?: "").show()
-        }
-    }
-
-    fun sendMail(file: File){
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.type = "text/plain"
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("email@example.com"))
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "")
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "")
-        if (!file.exists() || !file.canRead()) {
-            return
-        }
-        val uri = Uri.fromFile(file)
-        emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"))
-    }
-
-    fun openFile(file: File) {
-        val intent = Intent()
-        intent.action = android.content.Intent.ACTION_VIEW
-        val data = Uri.fromFile(file);
-        val type = "*/*";
-        intent.setDataAndType(data, type);
-        startActivity(intent);
     }
 
     override fun onBackPressed() {
         finish()
     }
 
-    override fun deleteItem(mainDTO: MainDTO) {
-        mainViewModel.mainDAO.deleteById(mainDTO.id?:0)
-        var removeItem:MainDTO?=null
-        mainViewModel.items.forEach {
-            if(it.id==mainDTO.id)
-                removeItem=it
-        }
-        mainViewModel.items.remove(removeItem)
-        bindAdapter()
+    fun init(){
+        setTranslucentBarNoScrollView()
+        supportFragmentManager.beginTransaction().replace(R.id.content,ListViewFragment.newInstance()).commit()
     }
 
-    override fun deleteGroup(items: List<MainDTO>) {
-        DialogHelper.materialDialog("Are you sure to delete all items in group?","Yes","No",
-                MaterialDialog.SingleButtonCallback { dialog, which ->
-                    val arrIds:IntArray=IntArray(items.count())
-                    items.forEachIndexed { index, mainDTO ->
-                        arrIds.set(index,mainDTO.id?:0)
-                    }
-                    mainViewModel.mainDAO.deleteByIds(arrIds)
-                    mainViewModel.items.removeAll(items)
-                    bindAdapter()
-                }, MaterialDialog.SingleButtonCallback { dialog, which ->
-                    dialog.dismiss()
-        },this).show()
+    override fun supportFragmentInjector() = dispatchingAndroidInjector
 
-    }
-
-    fun bindAdapter(){
-        searchActivityBinding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(context!!, RecyclerView.VERTICAL, false)
-            this@SearchActivity.adapter = SearchAdapter(this@SearchActivity, getListExpandGroup())
-            adapter = this@SearchActivity.adapter
-        }
-
-    }
-
-    override fun onItemClick(mainDTO: MainDTO) {
-        startActivity<VehicleActivity>("object" to mainDTO)
-        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
-    }
 
 }
 
 interface SearchListener {
-    fun deleteItem(mainDTO: MainDTO)
-    fun deleteGroup(items: List<MainDTO>)
-    fun onItemClick(mainDTO: MainDTO)
+
 }

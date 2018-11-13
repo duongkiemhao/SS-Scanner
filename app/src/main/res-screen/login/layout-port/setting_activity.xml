@@ -71,6 +71,7 @@
                     app:ms_thickness="0.5dp"
                     app:ms_arrowColor="@color/white"
                     app:ms_arrowSize="16dp"
+                    app:ms_floatingLabelColor="@color/black"
                     app:ms_alignLabels="false"/>
             </LinearLayout>
             <android.support.v7.widget.RecyclerView android:layout_below="@+id/layout_spinner" android:layout_marginTop="20dp"

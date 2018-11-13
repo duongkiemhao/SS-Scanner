@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.Comparator
 
 
-open class MainDTO() : Parcelable, Comparator<MainDTO> {
+open class MainDTO() : Comparator<MainDTO>, Parcelable {
     override fun compare(o1: MainDTO?, o2: MainDTO?): Int {
         if(!isDesc)
             return ((o1?.timestamp?:0)-(o2?.timestamp?:0)).toInt()
@@ -43,8 +43,12 @@ open class MainDTO() : Parcelable, Comparator<MainDTO> {
         var isSelected:Boolean=false
         var compareTime:String=""
         var compareTimeFullStr:String=""
+        var image:String?=null
+        var lat:Double?=null
+        var lng:Double?=null
 
     constructor(parcel: Parcel) : this() {
+        isDesc = parcel.readByte() != 0.toByte()
         id = parcel.readValue(Int::class.java.classLoader) as? Int
         scanText = parcel.readString()
         timestamp = parcel.readValue(Long::class.java.classLoader) as? Long
@@ -60,9 +64,13 @@ open class MainDTO() : Parcelable, Comparator<MainDTO> {
         isSelected = parcel.readByte() != 0.toByte()
         compareTime = parcel.readString()
         compareTimeFullStr = parcel.readString()
+        image = parcel.readString()
+        lat = parcel.readValue(Double::class.java.classLoader) as? Double
+        lng = parcel.readValue(Double::class.java.classLoader) as? Double
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeByte(if (isDesc) 1 else 0)
         parcel.writeValue(id)
         parcel.writeString(scanText)
         parcel.writeValue(timestamp)
@@ -78,6 +86,9 @@ open class MainDTO() : Parcelable, Comparator<MainDTO> {
         parcel.writeByte(if (isSelected) 1 else 0)
         parcel.writeString(compareTime)
         parcel.writeString(compareTimeFullStr)
+        parcel.writeString(image)
+        parcel.writeValue(lat)
+        parcel.writeValue(lng)
     }
 
     override fun describeContents(): Int {

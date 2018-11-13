@@ -18,7 +18,7 @@ abstract class ActivityModule {
 
     @ContributesAndroidInjector(modules = [EmptyFragmentBuildersModule::class])
     abstract fun injectLoginActivity(): MainActivity
-    @ContributesAndroidInjector(modules = [EmptyFragmentBuildersModule::class])
+    @ContributesAndroidInjector(modules = [SearchFragmentBuildersModule::class])
     abstract fun injectSearchActivity(): SearchActivity
     @ContributesAndroidInjector(modules = [EmptyFragmentBuildersModule::class])
     abstract fun injectSettingActivity(): SettingActivity

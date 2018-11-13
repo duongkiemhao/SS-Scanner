@@ -14,6 +14,7 @@ import com.siliconstack.carscanner.config.Constant
 import com.siliconstack.carscanner.databinding.VehicleDetailBinding
 import com.siliconstack.carscanner.model.MainDTO
 import com.siliconstack.carscanner.view.utility.DateUtility
+import com.siliconstack.carscanner.view.utility.Utility
 import me.dm7.barcodescanner.zxing.ZXingScannerView
 import java.util.*
 
@@ -45,7 +46,8 @@ class VehicleActivity : AppCompatActivity(){
             overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
 
         }
-
+        if(!mainDTO.image.isNullOrBlank())
+        vehicleDetailBinding.imgMap.setImageBitmap(Utility.convertBase64ToBitmap(mainDTO.image!!))
 
     }
 

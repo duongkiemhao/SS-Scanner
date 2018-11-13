@@ -103,23 +103,6 @@ class Utility{
             else return value
         }
 
-        fun resizeBitmap(bitmap: Bitmap,newHeight:Int,newWidth: Int): Bitmap{
-            val resizedBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
-
-            val scaleX = (newWidth / bitmap.width.toFloat())
-            val scaleY = newHeight / bitmap.height.toFloat()
-            val pivotX = 0f
-            val pivotY = 0f
-
-            val scaleMatrix = Matrix()
-            scaleMatrix.setScale(scaleX, scaleY, pivotX, pivotY)
-
-            val canvas = Canvas(resizedBitmap)
-            canvas.matrix=scaleMatrix
-            canvas.drawBitmap(bitmap, 0F, 0F, Paint(FILTER_BITMAP_FLAG))
-
-            return resizedBitmap
-        }
 
 
         fun createImageFile(context: Context) : File {

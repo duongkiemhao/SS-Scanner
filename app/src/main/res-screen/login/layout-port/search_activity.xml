@@ -41,69 +41,21 @@
                     android:layout_width="wrap_content" android:textAllCaps="true"
                     android:layout_height="wrap_content" android:layout_centerInParent="true"
                     android:textColor="@android:color/white" android:focusableInTouchMode="true" android:focusable="true"
-                    android:textSize="16sp" android:text="VIN/Rego/Barcode/QRCode">
+                    android:textSize="16sp" android:text="Vehicles">
                         <requestFocus/>
                 </TextView>
+                    <TextView android:layout_marginEnd="10dp" android:id="@+id/btn_switch"
+                        android:layout_width="wrap_content" android:layout_centerVertical="true"
+                        android:layout_height="wrap_content" android:layout_alignParentRight="true"
+                        android:textColor="@android:color/white" android:text="MapView">
+                        <requestFocus/>
+                    </TextView>
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
 
-            <EditText android:layout_marginStart="10dp" android:layout_marginEnd="10dp" android:layout_marginBottom="10dp"
-                android:id="@+id/edi_keyword"
-                style="@style/textbox"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/textbox_height_35"
-                android:drawableLeft="@drawable/ic_search_gray"
-                android:hint="Search"
-                android:imeOptions="actionDone"
-                android:textSize="14sp" />
-
-            <LinearLayout android:background="@color/color_4" android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp" android:weightSum="8"
-                android:layout_width="match_parent" android:orientation="horizontal"
-                android:layout_height="@dimen/textbox_height_35" >
-                <TextView android:layout_marginStart="5dp" android:text="Value"
-                    android:layout_width="0dp" android:layout_weight="1" android:textColor="@color/color_1"
-                        android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
-                <TextView android:layout_marginStart="5dp" android:text="Location" android:drawableRight="@drawable/ic_down"
-                    android:layout_width="0dp" android:layout_weight="2" android:id="@+id/txt_location" android:textColor="@color/color_1" android:gravity="center_vertical"
-                    android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
-                <TextView android:layout_marginStart="5dp" android:text="Floor"
-                    android:layout_width="0dp" android:layout_weight="1" android:textColor="@color/color_1"
-                    android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
-                <TextView android:layout_marginStart="5dp" android:text="Bay"
-                    android:layout_width="0dp" android:layout_weight="1" android:textColor="@color/color_1"
-                    android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
-                <TextView android:layout_marginStart="5dp" android:text="Name"
-                    android:layout_width="0dp" android:layout_weight="1" android:textColor="@color/color_1"
-                    android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:layout_height="wrap_content" android:textSize="12sp"/>
-                <TextView android:layout_gravity="center_vertical" android:layout_marginStart="5dp"
-                    android:layout_centerVertical="true" android:drawableRight="@drawable/ic_down" android:gravity="left|center_vertical"
-                    android:layout_width="0dp" android:layout_weight="1.5" android:textSize="12sp" android:textColor="@color/color_1" android:text="Date"
-                    android:layout_height="wrap_content" android:id="@+id/txt_date" />
-                <TextView android:layout_marginStart="5dp" android:layout_alignParentRight="true"
-                    android:layout_width="0dp" android:layout_weight="1" android:textColor="@color/red"
-                    android:layout_centerVertical="true" android:layout_gravity="center_vertical"
-                    android:id="@+id/txt_compare"
-                    android:layout_height="wrap_content" android:textSize="12sp" android:layout_marginEnd="5dp"/>
-            </LinearLayout>
-            <android.support.v7.widget.RecyclerView android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/recycler_view" android:background="@color/white"
-                android:layout_width="match_parent" android:scrollbars="vertical"
-                android:layout_height="0dp" android:layout_weight="1"/>
-
-            <TextView android:layout_marginTop="20dp" android:layout_marginBottom="20dp"
-                android:textColor="@color/white" android:id="@+id/btn_export"
-                android:layout_width="wrap_content" android:paddingLeft="30dp" android:text="Export"
-                android:background="@color/orange" android:layout_gravity="center_horizontal" android:gravity="center"
-                android:layout_height="@dimen/textbox_height_35" android:paddingRight="30dp" >
-
-            </TextView>
+           <FrameLayout
+               android:layout_width="match_parent" android:id="@+id/content"
+               android:layout_height="match_parent"/>
 
         </LinearLayout>
 
