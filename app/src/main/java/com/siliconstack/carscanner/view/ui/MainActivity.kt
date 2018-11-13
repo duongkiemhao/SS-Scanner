@@ -44,7 +44,10 @@ import com.siliconstack.carscanner.viewmodel.MainViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions
 import dagger.android.AndroidInjection
 import es.dmoral.toasty.Toasty
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.uiThread
+import java.lang.Exception
 
 
 class MainActivity : BaseActivity() {
@@ -251,54 +254,61 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         settingsRequest(REQUEST_CHECK_SETTINGS)
-
     }
 
+    fun processItemNMEA(value:String,isLastOne:Boolean){
+        if(isLastOne){
+            if(value.isNotBlank() && !value.startsWith("*",true))
+                array.add(value.substring(0, value.indexOf("*")).toInt())
+        }
+        else if(value.isNotBlank())
+            array.add(value.toInt())
+
+
+    }
     var nmeaListener=object: OnNmeaMessageListener {
         override fun onNmeaMessage(content: String?, p1: Long) {
-            if(content!!.toUpperCase().contains("GPGSV")) {
-                val arr: List<String> = content.split(",")
-                when {
-                    arr.size == 8 -> {
-                        if(arr[7].isNotBlank() && !arr[7].startsWith("*",true))
-
-                            array.add(arr[7].substring(0, arr[7].indexOf("*")).toInt())
-
-                    } // Display the string.
-                    arr.size == 12 -> {
-                        if(arr[7].isNotBlank() && !arr[7].startsWith("*",true))
-                            array.add(arr[7].toInt())
-                        if(arr[11].isNotBlank() && !arr[11].startsWith("*",true))
-                            array.add(arr[11].substring(0,arr[11].indexOf("*")).toInt())
+            doAsync {
+                if(content!!.toUpperCase().contains("GPGSV")) {
+                    val arr: List<String> = content.split(",")
+                    when {
+                        arr.size == 8 -> {
+                            processItemNMEA(arr[7],true)
+                        } // Display the string.
+                        arr.size == 12 -> {
+                            processItemNMEA(arr[7],false)
+                            processItemNMEA(arr[11],true)
+                        }
+                        arr.size == 16 -> {
+                            processItemNMEA(arr[7],false)
+                            processItemNMEA(arr[11],false)
+                            processItemNMEA(arr[15],true)
+                        } // Display the string.
+                        arr.size == 20 -> {
+                            processItemNMEA(arr[7],false)
+                            processItemNMEA(arr[11],false)
+                            processItemNMEA(arr[15],false)
+                            processItemNMEA(arr[15],true)
+                        } // Display the string.
                     }
-                    arr.size == 16 -> {
-                        if(arr[7].isNotBlank() && !arr[7].startsWith("*",true))
-                            array.add(arr[7].toInt())
-                        if(arr[11].isNotBlank() && !arr[11].startsWith("*",true))
-                            array.add(arr[11].toInt())
-                        if(arr[15].isNotBlank() && !arr[15].startsWith("*",true))
-                            array.add(arr[15].substring(0,arr[15].indexOf("*")).toInt())
-                    } // Display the string.
-                    arr.size == 20 -> {
-                        if(arr[7].isNotBlank() && !arr[7].startsWith("*",true))
-                            array.add(arr[7].toInt())
-                        if(arr[11].isNotBlank() && !arr[11].startsWith("*",true))
-                            array.add(arr[11].toInt())
-                        if(arr[15].isNotBlank() && !arr[15].startsWith("*",true))
-                            array.add(arr[15].toInt())
-                        if(arr[19].isNotBlank() && !arr[19].startsWith("*",true))
-                            array.add(arr[19].substring(0,arr[19].indexOf("*")).toInt())
-                    } // Display the string.
+                }
+                uiThread {
+                    if(array.count()>=1){
+                        try {
+                            var max = array.stream().mapToInt { it: Int? ->
+                                it!!
+                            }.max().asInt
+                            mainActivityBinding.txtGpsSignal.progress = max
+                            array.clear()
+                        }
+                        catch (exp:Exception){
+                            mainActivityBinding.txtGpsSignal.progress = 0
+                        }
+                    }
                 }
             }
-            if(array.count()>=5){
-                var max=array.stream().mapToInt { it: Int? ->
-                    it!!
-                }.max().asInt
-                Logger.d(max)
-                mainActivityBinding.txtGpsSignal.progress=max
-                array.clear()
-            }
+
+
         }
 
 
@@ -309,9 +319,9 @@ class MainActivity : BaseActivity() {
     {
 
         googleApiClient.connect();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(30 * 1000);
-        locationRequest.setFastestInterval(5 * 1000);
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY;
+        locationRequest.interval = 30 * 1000;
+        locationRequest.fastestInterval = 5 * 1000;
         builder.addLocationRequest(locationRequest);
         builder.setAlwaysShow(true);
         val result =
@@ -319,7 +329,7 @@ class MainActivity : BaseActivity() {
         result.setResultCallback { result: LocationSettingsResult ->
             val status = result.getStatus()
                 val state = result.getLocationSettingsStates()
-                when(status.getStatusCode()) {
+                when(status.statusCode) {
                     LocationSettingsStatusCodes.SUCCESS ->
                     {
                         requestPermissionNMEAListener()
